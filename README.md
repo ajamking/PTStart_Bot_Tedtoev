@@ -2,7 +2,7 @@
 Docker images for Telegram bot with PGSQL database for the PT_Start course
 
 # Описание
-Это естовый бот для стажировки PT_Start.
+Это тестовый бот для стажировки PT_Start.
 
 Код разбит на 3 логических раздела - TelegramBot, база данных postgres, а также репликатор базы данных.
 
