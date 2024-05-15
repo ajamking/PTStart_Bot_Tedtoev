@@ -366,15 +366,15 @@ def GetReplLogsCommand(update: Update, context):
     for x in range(0, len(answer), 4096):
         update.message.reply_text(answer[x:x+4096])
 
-    #client = paramiko.SSHClient()
-    #client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    #client.connect( hostname= RM_HOST, port = RM_PORT, username = RM_USER, password = RM_PASSWORD )
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect( hostname= RM_HOST, port = RM_PORT, username = RM_USER, password = RM_PASSWORD )
     
-    #stdin, stdout, stderr = client.exec_command("docker logs db | grep 'replica'")
-    #data = stdout.read() + stderr.read()
-    #client.close()
-    #data = str(data).replace('\\n', '\n').replace('\\t', '\t')[2:-1]
-    #update.message.reply_text(data)
+    stdin, stdout, stderr = client.exec_command("grep repl_user /var/log/postgresql/postgresql-14-main.log > /var/log/postgresql/LogToShow && cat /var/log/postgresql/LogToShow | head -n 10")
+    data = stdout.read() + stderr.read()
+    client.close()
+    data = str(data).replace('\\n', '\n').replace('\\t', '\t')[2:-1]
+    update.message.reply_text(data)
 
 def GetEmailsCommand(update: Update, context):
     connection = psycopg2.connect( host=DB_HOST, port=DB_PORT, database=DB_DATABASE, user=DB_USER, password=DB_PASSWORD )
