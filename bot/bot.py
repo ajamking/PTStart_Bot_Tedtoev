@@ -350,25 +350,9 @@ def GetServicesCommand(update: Update, context):
     update.message.reply_text(data)
 
 def GetReplLogsCommand(update: Update, context):
-    connection = psycopg2.connect( host=DB_HOST, port=DB_PORT, database=DB_DATABASE, user=DB_USER, password=DB_PASSWORD )
-    cursor = connection.cursor()
-    
-    data = cursor.execute("SELECT pg_read_file(pg_current_logfile());")
-    data = cursor.fetchall()
-    data = str(data).replace('\\n', '\n').replace('\\t', '\t')[2:-1]
-    answer = 'Логи репликации:\n'
-
-    for str1 in data.split('\n'):
-        if DB_REPL_USER in str1:
-            answer += str1 + '\n'
-    if len(answer) == 17:
-        answer = 'События репликации не обнаружены'
-    for x in range(0, len(answer), 4096):
-        update.message.reply_text(answer[x:x+4096])
-
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect( hostname= RM_HOST, port = RM_PORT, username = RM_USER, password = RM_PASSWORD )
+    client.connect( hostname = DB_HOST, port = RM_PORT, username = DB_USER, password = DB_PASSWORD )
     
     stdin, stdout, stderr = client.exec_command("grep repl_user /var/log/postgresql/postgresql.log | tail -n 10")
     data = stdout.read() + stderr.read()
