@@ -53,7 +53,7 @@ def FindPhoneNumbers (update: Update, context):
         connection = psycopg2.connect( host=DB_HOST, port=DB_PORT, database=DB_DATABASE, user=DB_USER, password=DB_PASSWORD )
         try:
             cursor = connection.cursor()
-            cursor.execute("SELECT * FROM Phones;")
+            cursor.execute("SELECT * FROM phones;")
             data = cursor.fetchall()
 
             file = open(PATH_TO_TEMPFILE, 'r')
@@ -64,7 +64,7 @@ def FindPhoneNumbers (update: Update, context):
             for phone in phoneNumbers:
                 phone = phone[:-1]
                 new_id = len(data) + counter
-                command = f"INSERT INTO Phones (PhoneID, Phone) VALUES ({new_id}, '{phone}');"
+                command = f"INSERT INTO phones (phoneID, phone) VALUES ({new_id}, '{phone}');"
                 counter = counter + 1
                 cursor.execute(command)
 
@@ -113,7 +113,7 @@ def FindEmailAddresses (update: Update, context):
 
         try:
             cursor = connection.cursor()
-            cursor.execute("SELECT * FROM Emails;")
+            cursor.execute("SELECT * FROM emails;")
             data = cursor.fetchall()
 
             file = open(PATH_TO_TEMPFILE, 'r')
@@ -124,7 +124,7 @@ def FindEmailAddresses (update: Update, context):
             for email in emails:
                 email = email[:-1]
                 new_id = len(data) + counter
-                command = f"INSERT INTO Emails (EmailID, Email) VALUES ({new_id}, '{email}');"
+                command = f"INSERT INTO emails (emailID, email) VALUES ({new_id}, '{email}');"
                 counter = counter + 1
                 cursor.execute(command)
 
@@ -380,7 +380,7 @@ def GetEmailsCommand(update: Update, context):
     connection = psycopg2.connect( host=DB_HOST, port=DB_PORT, database=DB_DATABASE, user=DB_USER, password=DB_PASSWORD )
     cursor = connection.cursor()
     
-    cursor.execute("SELECT * FROM Emails;")
+    cursor.execute("SELECT * FROM emails;")
     data = cursor.fetchall()
     logging.info("Команда SELECT успешно выполнена")
    
@@ -391,7 +391,7 @@ def GetPhoneNumbersCommand(update: Update, context):
     connection = psycopg2.connect( host=DB_HOST, port=DB_PORT, database=DB_DATABASE, user=DB_USER, password=DB_PASSWORD )
     cursor = connection.cursor()
     
-    cursor.execute("SELECT * FROM Phones;")
+    cursor.execute("SELECT * FROM ehones;")
     data = cursor.fetchall()
     logging.info("Команда SELECT успешно выполнена")
     for row in data:
