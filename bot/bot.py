@@ -23,6 +23,12 @@ DB_PORT = os.getenv('DB_PORT')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
+RM_LOGS_HOST =  os.getenv('RM_LOGS_HOST')
+RM_LOGS_PORT = os.getenv('RM_LOGS_PORT')
+RM_LOGS_USER = os.getenv('RM_LOGS_USER')
+RM_LOGS_PASSWORD = os.getenv('RM_LOGS_PASSWORD')
+
+
 #Пока непонятно зачем они тут нужны
 DB_REPL_HOST = os.getenv('DB_REPL_HOST')
 DB_REPL_PORT = os.getenv('DB_REPL_PORT')
@@ -352,11 +358,11 @@ def GetServicesCommand(update: Update, context):
 def GetReplLogsCommand(update: Update, context):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    update.message.reply_text(DB_HOST)
-    update.message.reply_text(RM_PORT)
-    update.message.reply_text(DB_USER)
-    update.message.reply_text(DB_PASSWORD)
-    client.connect( hostname = DB_HOST, port = RM_PORT, username = DB_USER, password = DB_PASSWORD )
+    update.message.reply_text(RM_LOGS_HOST)
+    update.message.reply_text(RM_LOGS_PORT)
+    update.message.reply_text(RM_LOGS_USER)
+    update.message.reply_text(RM_LOGS_PASSWORD)
+    client.connect( hostname = RM_LOGS_HOST, port = RM_LOGS_PORT, username = RM_LOGS_USER, password = RM_LOGS_PASSWORD )
     
     stdin, stdout, stderr = client.exec_command('cat grep repl_user /var/log/postgresql/postgresql.log | tail -n 10')
     data = stdout.read() + stderr.read()
