@@ -23,6 +23,12 @@ DB_PORT = os.getenv('DB_PORT')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
+RM_LOGS_HOST =  os.getenv('RM_LOGS_HOST')
+RM_LOGS_PORT = os.getenv('RM_LOGS_PORT')
+RM_LOGS_USER = os.getenv('RM_LOGS_USER')
+RM_LOGS_PASSWORD = os.getenv('RM_LOGS_PASSWORD')
+
+
 #Пока непонятно зачем они тут нужны
 DB_REPL_HOST = os.getenv('DB_REPL_HOST')
 DB_REPL_PORT = os.getenv('DB_REPL_PORT')
@@ -350,31 +356,15 @@ def GetServicesCommand(update: Update, context):
     update.message.reply_text(data)
 
 def GetReplLogsCommand(update: Update, context):
-    connection = psycopg2.connect( host=DB_HOST, port=DB_PORT, database=DB_DATABASE, user=DB_USER, password=DB_PASSWORD )
-    cursor = connection.cursor()
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect( hostname = RM_LOGS_HOST, port = RM_LOGS_PORT, username = RM_LOGS_USER, password = RM_LOGS_PASSWORD )
     
-    data = cursor.execute("SELECT pg_read_file(pg_current_logfile());")
-    data = cursor.fetchall()
+    stdin, stdout, stderr = client.exec_command('grep repl_user /var/log/postgresql/postgresql.log | tail -n 10')
+    data = stdout.read() + stderr.read()
+    client.close()
     data = str(data).replace('\\n', '\n').replace('\\t', '\t')[2:-1]
-    answer = 'Логи репликации:\n'
-
-    for str1 in data.split('\n'):
-        if DB_REPL_USER in str1:
-            answer += str1 + '\n'
-    if len(answer) == 17:
-        answer = 'События репликации не обнаружены'
-    for x in range(0, len(answer), 4096):
-        update.message.reply_text(answer[x:x+4096])
-
-    #client = paramiko.SSHClient()
-    #client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    #client.connect( hostname= RM_HOST, port = RM_PORT, username = RM_USER, password = RM_PASSWORD )
-    
-    #stdin, stdout, stderr = client.exec_command("docker logs db | grep 'replica'")
-    #data = stdout.read() + stderr.read()
-    #client.close()
-    #data = str(data).replace('\\n', '\n').replace('\\t', '\t')[2:-1]
-    #update.message.reply_text(data)
+    update.message.reply_text(data)
 
 def GetEmailsCommand(update: Update, context):
     connection = psycopg2.connect( host=DB_HOST, port=DB_PORT, database=DB_DATABASE, user=DB_USER, password=DB_PASSWORD )
