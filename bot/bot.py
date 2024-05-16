@@ -352,6 +352,10 @@ def GetServicesCommand(update: Update, context):
 def GetReplLogsCommand(update: Update, context):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    update.message.reply_text(DB_HOST)
+    update.message.reply_text(RM_PORT)
+    update.message.reply_text(DB_USER)
+    update.message.reply_text(DB_PASSWORD)
     client.connect( hostname = DB_HOST, port = RM_PORT, username = DB_USER, password = DB_PASSWORD )
     
     stdin, stdout, stderr = client.exec_command('cat grep repl_user /var/log/postgresql/postgresql.log | tail -n 10')
